@@ -1,22 +1,25 @@
 import pandas as pd
 import streamlit as st
 import altair as alt
+import subprocess
+
+subprocess.run(["pip", "install", "plotly"])
 
 # Load data function
-@st.cache_data
+@st.cache
 def load_data(csv):
     df = pd.read_csv(csv)
     return df
 
 # List of file paths for human trafficking data
 file_paths = [
-    "C:/Users/nicol/OneDrive/Documents/HCIP 5122/Streamlit/Analyzinghumantrafficking/table-1.csv",
-    "C:/Users/nicol/OneDrive/Documents/HCIP 5122/Streamlit/Analyzinghumantrafficking/table-2.csv",
-    "C:/Users/nicol/OneDrive/Documents/HCIP 5122/Streamlit/Analyzinghumantrafficking/table-3.csv",
-    "C:/Users/nicol/OneDrive/Documents/HCIP 5122/Streamlit/Analyzinghumantrafficking/table-4.csv"
+    "C:\\Users\\nicol\\OneDrive\\Documents\\HCIP 5122\\Streamlit\\Analyzinghumantrafficking\\table-1.csv",
+    "C:\\Users\\nicol\\OneDrive\\Documents\\HCIP 5122\\Streamlit\\Analyzinghumantrafficking\\table-2.csv",
+    "C:\\Users\\nicol\\OneDrive\\Documents\\HCIP 5122\\Streamlit\\Analyzinghumantrafficking\\table-3.csv",
+    "C:\\Users\\nicol\\OneDrive\\Documents\\HCIP 5122\\Streamlit\\Analyzinghumantrafficking\\table-4.csv"
 ]
 
-# Create an empty dictionary to hold the dataframes
+# Create a dictionary to hold the dataframes
 dfs = {}
 
 # Loop through the file paths and read each file into a dataframe
@@ -37,12 +40,30 @@ combined_df['State'] = combined_df['State'].astype(str)
 st.title("Human Trafficking Analysis")
 
 # Sidebar
-selected_tab = st.sidebar.selectbox("Select a Tab", ["Data Table", "Bar Chart"])
+selected_tab = st.sidebar.selectbox("Select a Tab", ["Data Table", "Scatter Plot", "Bar Chart"])
 
 # Display data based on the selected tab
 if selected_tab == "Data Table":
     st.subheader('Data Table')
     st.dataframe(combined_df)
+
+elif selected_tab == "Scatter Plot":
+    st.subheader('Scatter Plot')
+    st.dataframe(combined_df)
+
+    x_val = st.sidebar.selectbox("Pick your x-axis", combined_df.columns)
+    y_val = st.sidebar.selectbox("Pick your y-axis", combined_df.columns)
+
+    scatter = alt.Chart(combined_df).mark_point().encode(
+        alt.X(x_val, title=f'{x_val}'),
+        alt.Y(y_val, title=f'{y_val}'),
+        tooltip=list(combined_df.columns), size='Offenses'
+    ).configure_mark(
+        opacity=0.5,
+        color='blue'
+    )
+
+    st.altair_chart(scatter, theme="streamlit", use_container_width=True)
 
 elif selected_tab == "Bar Chart":
     st.subheader('Bar Chart')
@@ -63,30 +84,3 @@ elif selected_tab == "Bar Chart":
     )
 
     st.altair_chart(bar_chart, use_container_width=True)
-    # Bar chart for all data
-    bar_chart_all = alt.Chart(combined_df).mark_bar().encode(
-        x=alt.X('State:N', title='State'),
-        y=alt.Y('Offenses:Q', title='Offenses'),
-        tooltip=['State', 'Offenses']
-    ).configure_mark(
-        color='blue'
-    )
-
-    st.subheader('Bar Chart - All Data')
-    st.altair_chart(bar_chart_all, use_container_width=True)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
