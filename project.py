@@ -1,6 +1,7 @@
 import pandas as pd
 import streamlit as st
 import altair as alt
+import os
 
 # Load data function
 @st.cache_data
@@ -8,15 +9,37 @@ def load_data(csv):
     df = pd.read_csv(csv)
     return df
 
+
+# Define the current directory
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
 # List of file paths for human trafficking data
 file_paths = [
-    "C:/Users/nicol/OneDrive/Documents/HCIP 5122/Streamlit/Analyzinghumantrafficking/table-1.csv",
-    "C:/Users/nicol/OneDrive/Documents/HCIP 5122/Streamlit/Analyzinghumantrafficking/table-2.csv",
-    "C:/Users/nicol/OneDrive/Documents/HCIP 5122/Streamlit/Analyzinghumantrafficking/table-3.csv",
-    "C:/Users/nicol/OneDrive/Documents/HCIP 5122/Streamlit/Analyzinghumantrafficking/table-4.csv"
+    os.path.join(current_dir, "table-1.csv"),
+    os.path.join(current_dir, "table-2.csv"),
+    os.path.join(current_dir, "table-3.csv"),
+    os.path.join(current_dir, "table-4.csv")
 ]
 
-# Create an empty dictionary to hold the dataframes
+# Initialize an empty dictionary to store the dataframes
+dfs = {}
+
+# Loop through the file paths and read each file into a dataframe
+for i, file in enumerate(file_paths):
+    df = load_data(file)
+    dfs[f'df{i+1}'] = df
+
+# Combine all dataframes into one
+combined_df = pd.concat(dfs.values())
+
+# Remove leading and trailing spaces from column names
+combined_df.columns = combined_df.columns.str.strip()
+
+# Convert 'State' column to string type
+combined_df['State'] = combined_df['State'].astype(str)
+
+
+# Initialize an empty dictionary to store the dataframes
 dfs = {}
 
 # Loop through the file paths and read each file into a dataframe
@@ -34,7 +57,7 @@ combined_df.columns = combined_df.columns.str.strip()
 combined_df['State'] = combined_df['State'].astype(str)
 
 # Streamlit App
-st.title("Human Trafficking Analysis")
+st.title("Analyzing human trafficking in the US")  # Added title
 
 # Sidebar
 selected_tab = st.sidebar.selectbox("Select a Tab", ["Data Table", "Bar Chart"])
