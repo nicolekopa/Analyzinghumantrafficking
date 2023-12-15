@@ -30,11 +30,6 @@ for i, file in enumerate(file_paths):
 # Combine all dataframes into one
 combined_df = pd.concat(dfs.values())
 
-# Check if 'Total' column exists in combined_df
-if 'Total' in combined_df.columns:
-    # Ensure 'Total' column is numeric
-    combined_df['Total'] = pd.to_numeric(combined_df['Total'], errors='coerce')
-
 # Streamlit App
 st.title("Human Trafficking Analysis")
 
@@ -57,7 +52,7 @@ elif selected_tab == "Scatter Plot":
     scatter = alt.Chart(combined_df).mark_point().encode(
         alt.X(x_val, title=f'{x_val}'),
         alt.Y(y_val, title=f'{y_val}'),
-        tooltip=list(combined_df.columns), size='Total'
+        tooltip=list(combined_df.columns), size='Offenses'
     ).configure_mark(
         opacity=0.5,
         color='blue'
@@ -73,11 +68,11 @@ elif selected_tab == "Bar Chart":
     z_val = st.sidebar.selectbox("Pick your issue to evaluate", combined_df.columns)
     count_input = st.sidebar.number_input(f"Enter a value for the number of top {z_val} values to display", min_value=1, max_value=len(combined_df), value=10, step=1)
 
-    # 
+    # Bar chart without 'Total' column
     bar_chart = alt.Chart(combined_df.nlargest(count_input, z_val)).mark_bar().encode(
         y=alt.Y('State', title='State', sort='-x'),
         x=alt.X(z_val, title=f'{z_val}'),
-        tooltip=['State', z_val, 'Offense']  # Changed 'Total' to 'Offense'
+        tooltip=['State', z_val]  # Updated tooltip to exclude 'Offenses'
     ).transform_window(
         rank='rank(z_val)', sort=[alt.SortField(z_val, order='descending')]
     ).transform_filter(
@@ -85,6 +80,7 @@ elif selected_tab == "Bar Chart":
     )
 
     st.altair_chart(bar_chart, use_container_width=True)
+
 
 
 
