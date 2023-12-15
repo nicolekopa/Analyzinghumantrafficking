@@ -2,7 +2,7 @@
 analyzing sex/human trafficking in the US
 # Human Trafficking Data Analysis
 
-[![Open in Streamlit]
+[![Open in Streamlit] https://analyzinghumantrafficking.streamlit.app/
 
 ## Introduction
 This Streamlit dashboard provides a comprehensive analysis of human trafficking data, shedding light on the prevalence and patterns of this illicit activity.
@@ -41,3 +41,4 @@ This dashboard serves as a valuable resource for policymakers, law enforcement a
 The dashboard can be expanded to include data from additional regions or sources to provide a more comprehensive understanding of the global human trafficking landscape. Ongoing updates and collaboration with relevant organizations can enhance the effectiveness of counter-trafficking efforts.
 
 ## Streamlit App
+https://analyzinghumantrafficking.streamlit.app/
