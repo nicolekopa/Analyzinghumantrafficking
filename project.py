@@ -1,16 +1,9 @@
 import pandas as pd
 import streamlit as st
 import altair as alt
-import numpy as np
 import subprocess
 
 subprocess.run(["pip", "install", "plotly"])
-import subprocess
-
-subprocess.run(["pip", "install", "plotly"])
-
-import subprocess
-
 
 # Load data function
 @st.cache_data
@@ -46,7 +39,7 @@ if 'Total' in combined_df.columns:
 st.title("Human Trafficking Analysis")
 
 # Sidebar
-selected_tab = st.sidebar.selectbox("Select a Tab", ["Data Table", "Scatter Plot", "Bar Chart", "Map"])
+selected_tab = st.sidebar.selectbox("Select a Tab", ["Data Table", "Scatter Plot", "Bar Chart"])
 
 # Display data table
 if selected_tab == "Data Table":
@@ -80,19 +73,18 @@ elif selected_tab == "Bar Chart":
     z_val = st.sidebar.selectbox("Pick your issue to evaluate", combined_df.columns)
     count_input = st.sidebar.number_input(f"Enter a value for the number of top {z_val} values to display", min_value=1, max_value=len(combined_df), value=10, step=1)
 
-    bar = alt.Chart(combined_df.nlargest(count_input, z_val)).mark_bar().encode(
-        y=alt.Y('', title='State', sort='-x'),
+    # 
+    bar_chart = alt.Chart(combined_df.nlargest(count_input, z_val)).mark_bar().encode(
+        y=alt.Y('State', title='State', sort='-x'),
         x=alt.X(z_val, title=f'{z_val}'),
-        tooltip=['State', z_val, 'Total']
+        tooltip=['State', z_val, 'Offense']  # Changed 'Total' to 'Offense'
     ).transform_window(
         rank='rank(z_val)', sort=[alt.SortField(z_val, order='descending')]
     ).transform_filter(
         (alt.datum.rank <= count_input)
     )
 
-    st.altair_chart(bar, use_container_width=True)
+    st.altair_chart(bar_chart, use_container_width=True)
 
-# Map Tab
-elif selected_tab == "Map":
-    st.subheader('Map')
-    st.map(combined_df)
+
+
